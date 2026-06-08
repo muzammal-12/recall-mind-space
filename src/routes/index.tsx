@@ -1,236 +1,470 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { motion } from "framer-motion";
+import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import CountUp from "react-countup";
 import {
-  Mic, Users, CheckSquare, Brain, Bell, Lock, Play, ArrowRight, Star,
+  Sparkles, ArrowRight, Play, Shield, Zap, Lock,
+  Mic, Users, BrainCircuit, Database, BellRing, ShieldCheck,
+  FileText, Search, CheckCircle2, Star, Quote, TrendingUp,
 } from "lucide-react";
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
+import { Navbar } from "@/components/layout/Navbar";
+import { Footer } from "@/components/layout/Footer";
+import { GradientButton } from "@/components/ui/GradientButton";
+import { GlassCard } from "@/components/ui/GlassCard";
+import { AnimatedSection } from "@/components/ui/AnimatedSection";
+import { Badge } from "@/components/ui/Badge";
+import { Avatar } from "@/components/ui/Avatar";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Recalla — Your AI Memory for Every Meeting" },
-      { name: "description", content: "Real-time transcription, task extraction, and semantic memory for meetings and lectures." },
+      { title: "Recalla — Never Forget What Matters Most" },
+      { name: "description", content: "AI-powered meeting memory. Transcribes, extracts tasks and decisions, and lets you query past sessions in plain English." },
       { property: "og:title", content: "Recalla — Your AI Memory for Every Meeting" },
-      { property: "og:description", content: "Real-time transcription, task extraction, and semantic memory for meetings and lectures." },
+      { property: "og:description", content: "Never lose a task, decision, or detail again." },
     ],
   }),
   component: Landing,
 });
 
-const features = [
-  { icon: Mic, title: "Real-Time Transcription", desc: "Converts speech to text live as your meeting happens." },
-  { icon: Users, title: "Speaker Detection", desc: "Knows who said what with automatic speaker labels." },
-  { icon: CheckSquare, title: "Task Extraction", desc: "AI pulls out action items, decisions and deadlines automatically." },
-  { icon: Brain, title: "Semantic Memory", desc: "Ask anything about past meetings in plain English." },
-  { icon: Bell, title: "Smart Reminders", desc: "Get notified about tasks without ever setting a reminder manually." },
-  { icon: Lock, title: "100% Private", desc: "Everything runs locally. Your meetings never leave your device." },
-];
-
-const steps = [
-  { n: "01", title: "Record", desc: "Start recording your meeting with one tap." },
-  { n: "02", title: "Transcribe", desc: "Recalla converts speech to text in real time." },
-  { n: "03", title: "Extract", desc: "AI pulls out tasks, decisions, and key topics." },
-  { n: "04", title: "Recall", desc: "Ask anything about past meetings anytime." },
-];
-
-const testimonials = [
-  { name: "Ammad Rauf", role: "Product Manager, Lyra", initials: "AR", quote: "Recalla replaced three different tools. The semantic search alone is worth it — I can find any decision from any meeting in seconds." },
-  { name: "Sara Iqbal", role: "PhD Student, MIT", initials: "SI", quote: "I record every lecture and just ask Recalla questions later. It's like having a perfect study partner that never forgets." },
-  { name: "Daniel Chen", role: "Founder, Northwind", initials: "DC", quote: "Our standups are 40% shorter now. Recalla extracts everything and reminds us about commitments before they slip." },
-];
-
-const transcript = [
-  { speaker: "Sara", text: "Let's lock the launch date for Q3." },
-  { speaker: "Ammad", text: "Engineering says August 14th is realistic." },
-  { speaker: "Daniel", text: "Marketing needs two weeks lead time." },
-  { speaker: "Recalla", text: "✦ Task created: confirm launch — Ammad, by Friday." },
-];
-
 function Landing() {
   return (
-    <div className="min-h-screen bg-background text-foreground transition-colors">
+    <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)]">
       <Navbar />
       <Hero />
       <Features />
       <HowItWorks />
+      <Stats />
       <Testimonials />
-      <CtaBanner />
+      <FinalCTA />
       <Footer />
     </div>
   );
 }
 
+/* ───────────────────────── HERO ───────────────────────── */
+
 function Hero() {
   return (
-    <section className="relative overflow-hidden pt-16 pb-24 md:pt-24 md:pb-32">
-      <div className="absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute top-10 -left-20 h-96 w-96 rounded-full bg-[#4F6EF7] opacity-20 blur-3xl animate-blob" />
-        <div className="absolute top-40 right-0 h-[28rem] w-[28rem] rounded-full bg-[#7C3AED] opacity-20 blur-3xl animate-blob" style={{ animationDelay: "4s" }} />
-        <div className="absolute bottom-0 left-1/3 h-80 w-80 rounded-full bg-[#9F6FFF] opacity-15 blur-3xl animate-blob" style={{ animationDelay: "8s" }} />
+    <section className="relative overflow-hidden min-h-[100vh] flex items-center pt-10 pb-20">
+      {/* Aurora blobs */}
+      <div aria-hidden className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] rounded-full opacity-[0.18] blur-[80px] animate-blob"
+          style={{ background: "var(--accent-blue)" }} />
+        <div className="absolute bottom-[-15%] right-[-10%] w-[500px] h-[500px] rounded-full opacity-[0.18] blur-[80px] animate-blob"
+          style={{ background: "var(--accent-purple)", animationDelay: "-3s" }} />
+        <div className="absolute top-[10%] right-[5%] w-[400px] h-[400px] rounded-full opacity-[0.14] blur-[80px] animate-blob"
+          style={{ background: "var(--accent-teal)", animationDelay: "-6s" }} />
+        <div className="absolute inset-0 dot-grid opacity-40" />
       </div>
 
-      <div className="max-w-7xl mx-auto px-5 sm:px-8 grid lg:grid-cols-2 gap-14 items-center">
-        <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-          <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium border border-border bg-surface/60 backdrop-blur">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            Now in private beta
-          </span>
-          <h1 className="mt-5 font-display text-[36px] leading-[1.05] sm:text-5xl lg:text-[64px] font-bold tracking-tight">
-            Your AI Memory for <span className="gradient-text">Every Meeting</span>
-          </h1>
-          <p className="mt-5 text-lg sm:text-xl text-subtext max-w-xl">
-            Recalla listens, transcribes, and remembers — so you never lose an important detail, task, or decision again.
-          </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link to="/signup" className="px-6 py-3.5 rounded-xl btn-gradient text-base font-semibold hover:scale-[1.02] active:scale-[0.98] inline-flex items-center gap-2">
-              Start Free <ArrowRight size={18} />
-            </Link>
-            <button className="px-6 py-3.5 rounded-xl border border-border bg-surface/60 backdrop-blur text-base font-semibold hover:bg-muted inline-flex items-center gap-2">
-              <Play size={16} /> Watch Demo
-            </button>
-          </div>
-          <p className="mt-5 text-sm text-subtext">
-            ✦ No credit card required &nbsp; ✦ Free forever plan &nbsp; ✦ Works offline
-          </p>
-        </motion.div>
+      <div className="relative max-w-7xl mx-auto px-5 sm:px-8 grid lg:grid-cols-2 gap-14 items-center">
+        <div>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+            className="inline-flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-semibold border"
+            style={{
+              background: "color-mix(in oklab, var(--accent-blue) 12%, transparent)",
+              borderColor: "color-mix(in oklab, var(--accent-blue) 35%, transparent)",
+              color: "var(--accent-blue)",
+            }}
+          >
+            <Sparkles size={14} />
+            AI-Powered Memory
+          </motion.div>
 
-        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.7, delay: 0.15 }}>
-          <div className="relative">
-            <div className="glass rounded-3xl p-6 shadow-[var(--shadow-card)]">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <span className="relative flex h-3 w-3"><span className="absolute inset-0 rounded-full bg-red-500 animate-ping opacity-70" /><span className="rounded-full bg-red-500 h-3 w-3" /></span>
-                  <span className="text-sm font-medium">Q2 Budget Review · 02:34</span>
+          <h1 className="mt-6 font-display text-[40px] leading-[1.05] sm:text-6xl lg:text-[72px] font-extrabold tracking-tight">
+            <StaggerWords text="Never Forget" />
+            <br />
+            <StaggerWords text="What" delay={0.4} />{" "}
+            <span className="gradient-text"><StaggerWords text="Matters Most" delay={0.55} /></span>
+          </h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.9, duration: 0.5 }}
+            className="mt-6 text-lg sm:text-xl text-[var(--text-secondary)] max-w-xl leading-relaxed"
+          >
+            Recalla listens to your meetings, extracts every task and decision,
+            and builds a memory you can search forever.
+          </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 1.1, duration: 0.4 }}
+            className="mt-8 flex flex-wrap gap-3"
+          >
+            <Link to="/signup">
+              <GradientButton size="lg" className="group">
+                Start Free — No Card Needed
+                <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
+              </GradientButton>
+            </Link>
+            <GradientButton size="lg" variant="outline">
+              <span className="h-7 w-7 rounded-full aurora-bg text-white flex items-center justify-center">
+                <Play size={12} fill="currentColor" />
+              </span>
+              Watch Demo
+            </GradientButton>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+            transition={{ delay: 1.3, duration: 0.5 }}
+            className="mt-8 flex flex-wrap items-center gap-4 text-sm text-[var(--text-secondary)]"
+          >
+            {[
+              { icon: Shield, label: "Privacy First" },
+              { icon: Zap, label: "Instant Setup" },
+              { icon: Lock, label: "Works Offline" },
+            ].map((b, i) => (
+              <div key={b.label} className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <b.icon size={16} className="text-[var(--accent-blue)]" />
+                  <span className="font-medium">{b.label}</span>
                 </div>
-                <div className="flex gap-1">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <span key={i} className="w-1 bg-primary rounded-full animate-wave" style={{ height: 16, animationDelay: `${i * 0.1}s` }} />
-                  ))}
-                </div>
+                {i < 2 && <span className="h-1 w-1 rounded-full bg-[var(--text-muted)]" />}
               </div>
-              <div className="space-y-3">
-                {transcript.map((t, i) => (
-                  <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 + i * 0.5, duration: 0.4 }}
-                    className={`flex gap-3 items-start ${t.speaker === "Recalla" ? "pl-4 border-l-2 border-accent" : ""}`}>
-                    <span className="text-xs font-semibold text-primary min-w-16">{t.speaker}</span>
-                    <span className="text-sm text-foreground/90">{t.text}</span>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 2 }}
-              className="absolute -bottom-6 -right-4 sm:-right-10 glass rounded-2xl p-4 max-w-xs shadow-[var(--shadow-card)]">
-              <p className="text-xs text-subtext mb-1">Smart Reminder</p>
-              <p className="text-sm font-medium">Send Q2 report to Ali by Friday 5pm</p>
-            </motion.div>
-          </div>
-        </motion.div>
+            ))}
+          </motion.div>
+        </div>
+
+        <DashboardMockup />
       </div>
     </section>
   );
 }
+
+function StaggerWords({ text, delay = 0 }: { text: string; delay?: number }) {
+  return (
+    <span className="inline">
+      {text.split(" ").map((w, i) => (
+        <motion.span
+          key={i}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: delay + i * 0.08, duration: 0.45 }}
+          className="inline-block mr-[0.25em]"
+        >
+          {w}
+        </motion.span>
+      ))}
+    </span>
+  );
+}
+
+function DashboardMockup() {
+  const ref = useRef<HTMLDivElement>(null);
+  const mx = useMotionValue(0.5);
+  const my = useMotionValue(0.5);
+  const rx = useSpring(useTransform(my, [0, 1], [8, -8]), { stiffness: 80, damping: 20 });
+  const ry = useSpring(useTransform(mx, [0, 1], [-10, 10]), { stiffness: 80, damping: 20 });
+
+  const transcriptLines = [
+    { speaker: "Sarah", color: "#4F6EF7", text: "Let's lock the Q2 budget by Friday." },
+    { speaker: "Bilal", color: "#7C3AED", text: "I'll send the revised numbers tonight." },
+    { speaker: "Rania", color: "#0EA5E9", text: "Marketing spend cap stays at 18%." },
+    { speaker: "Ali", color: "#10B981", text: "Approved. Let's move." },
+  ];
+  const [visible, setVisible] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setVisible(v => (v >= transcriptLines.length ? 1 : v + 1)), 1400);
+    return () => clearInterval(id);
+  }, []);
+
+  return (
+    <motion.div
+      ref={ref}
+      onMouseMove={(e) => {
+        const r = ref.current?.getBoundingClientRect();
+        if (!r) return;
+        mx.set((e.clientX - r.left) / r.width);
+        my.set((e.clientY - r.top) / r.height);
+      }}
+      onMouseLeave={() => { mx.set(0.5); my.set(0.5); }}
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.5, duration: 0.7 }}
+      style={{ perspective: 1000 }}
+      className="relative"
+    >
+      <motion.div
+        style={{ rotateX: rx, rotateY: ry, transformStyle: "preserve-3d" }}
+        className="relative rounded-2xl p-[1.5px] aurora-bg shadow-[0_30px_80px_-20px_rgba(79,110,247,0.5)]"
+      >
+        <div className="rounded-2xl bg-[var(--bg-surface)] p-5">
+          <div className="flex items-center gap-1.5 mb-4">
+            <span className="h-3 w-3 rounded-full bg-[#FF5F57]" />
+            <span className="h-3 w-3 rounded-full bg-[#FEBC2E]" />
+            <span className="h-3 w-3 rounded-full bg-[#28C840]" />
+            <span className="ml-auto inline-flex items-center gap-1.5 text-[10px] font-semibold px-2 py-1 rounded-full bg-[color-mix(in_oklab,var(--accent-purple)_15%,transparent)] text-[var(--accent-purple)]">
+              <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent-purple)] animate-pulse" />
+              AI Processing
+            </span>
+          </div>
+
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-2">Live Transcript</p>
+            <div className="space-y-2 min-h-[140px]">
+              {transcriptLines.slice(0, visible).map((l, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="flex gap-2.5 items-start text-[13px]"
+                >
+                  <span className="h-6 w-6 rounded-full shrink-0 flex items-center justify-center text-[10px] font-semibold text-white" style={{ background: l.color }}>{l.speaker[0]}</span>
+                  <div>
+                    <span className="font-semibold mr-1.5">{l.speaker}:</span>
+                    <span className="text-[var(--text-secondary)]">{l.text}</span>
+                    {i === visible - 1 && <span className="inline-block w-[2px] h-3.5 bg-[var(--accent-blue)] align-middle ml-0.5 animate-blink" />}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-4 pt-4 border-t border-[var(--border)]">
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-2">Tasks Detected</p>
+            <div className="space-y-1.5">
+              {[
+                "Send revised Q2 numbers — Bilal — Tonight",
+                "Cap marketing spend at 18% — Rania",
+                "Finalize budget approval — All — Friday",
+              ].map((t, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 1 + i * 0.2 }}
+                  className="flex items-center gap-2 text-[12.5px] text-[var(--text-secondary)]"
+                >
+                  <CheckCircle2 size={14} className="text-[var(--success)] shrink-0" />
+                  {t}
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+/* ───────────────────────── FEATURES ───────────────────────── */
+
+const features = [
+  { icon: Mic, title: "Real-Time Transcription", body: "Converts speech to structured text as your meeting happens, with 98% accuracy across accents and noise conditions.", grad: "linear-gradient(135deg,#4F6EF7,#7C3AED)" },
+  { icon: Users, title: "Speaker Intelligence", body: "Automatically identifies and labels every speaker. Know exactly who said what and when throughout the session.", grad: "linear-gradient(135deg,#7C3AED,#EC4899)" },
+  { icon: BrainCircuit, title: "Smart Extraction", body: "AI pulls out every action item, decision, and deadline without you lifting a finger. Structured and ready to act on.", grad: "linear-gradient(135deg,#0EA5E9,#4F6EF7)" },
+  { icon: Database, title: "Semantic Memory", body: "Ask anything about any past meeting in plain English. Recalla finds the answer even if you forget the exact words.", grad: "linear-gradient(135deg,#10B981,#0EA5E9)" },
+  { icon: BellRing, title: "Proactive Reminders", body: "Detects patterns in your task history and reminds you automatically — before you even think to set a reminder.", grad: "linear-gradient(135deg,#F59E0B,#EF4444)" },
+  { icon: ShieldCheck, title: "Complete Privacy", body: "Everything processes and stores locally on your device. Your conversations never touch an external server.", grad: "linear-gradient(135deg,#6366F1,#9F6FFF)" },
+];
 
 function Features() {
   return (
-    <section id="features" className="py-20 md:py-28">
-      <div className="max-w-7xl mx-auto px-5 sm:px-8">
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}
-          className="max-w-2xl mb-14">
-          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight">
-            Everything you need, <span className="gradient-text">nothing you don't</span>
-          </h2>
-          <p className="mt-4 text-lg text-subtext">Powerful, focused tools that disappear into the background of your work.</p>
-        </motion.div>
-
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {features.map((f, i) => (
-            <motion.div key={f.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.4, delay: i * 0.05 }}
-              className="group glass rounded-2xl p-6 hover:-translate-y-1 hover:shadow-[var(--shadow-glow)] transition-all duration-300">
-              <div className="h-12 w-12 rounded-xl gradient-bg flex items-center justify-center text-white shadow-[var(--shadow-glow)]">
+    <AnimatedSection id="features" className="py-24 px-5 sm:px-8 max-w-7xl mx-auto">
+      <div className="text-center max-w-2xl mx-auto mb-14">
+        <h2 className="text-3xl sm:text-5xl font-extrabold">Everything Built for <span className="gradient-text">Intelligence</span></h2>
+        <p className="mt-4 text-lg text-[var(--text-secondary)]">Not just transcription. A complete memory system.</p>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {features.map((f, i) => (
+          <motion.div
+            key={f.title}
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ delay: i * 0.08, duration: 0.5 }}
+          >
+            <GlassCard hover className="p-6 h-full group cursor-pointer">
+              <div
+                className="h-12 w-12 rounded-xl flex items-center justify-center text-white mb-5 transition-shadow group-hover:shadow-[0_10px_30px_-8px_rgba(79,110,247,0.5)]"
+                style={{ background: f.grad }}
+              >
                 <f.icon size={22} />
               </div>
-              <h3 className="font-display text-lg font-semibold mt-5">{f.title}</h3>
-              <p className="mt-2 text-sm text-subtext leading-relaxed">{f.desc}</p>
-            </motion.div>
-          ))}
-        </div>
+              <h3 className="text-lg font-bold mb-2">{f.title}</h3>
+              <p className="text-[15px] text-[var(--text-secondary)] leading-relaxed">{f.body}</p>
+              <div className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold gradient-text opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all">
+                Learn more <ArrowRight size={14} />
+              </div>
+            </GlassCard>
+          </motion.div>
+        ))}
       </div>
-    </section>
+    </AnimatedSection>
   );
 }
+
+/* ───────────────────────── HOW IT WORKS ───────────────────────── */
+
+const steps = [
+  { icon: Mic, title: "Record", body: "Open Recalla and tap record. It silently captures everything in the background." },
+  { icon: FileText, title: "Transcribe", body: "Speech converts to structured text with speaker labels in real time." },
+  { icon: Sparkles, title: "Extract", body: "AI identifies tasks, decisions, deadlines and key discussion points." },
+  { icon: Search, title: "Recall", body: "Ask anything about any meeting. Get instant, accurate answers forever." },
+];
 
 function HowItWorks() {
   return (
-    <section id="how" className="py-20 md:py-28 bg-surface/50 border-y border-border">
+    <AnimatedSection id="how" className="py-24 bg-[var(--bg-surface)]">
       <div className="max-w-7xl mx-auto px-5 sm:px-8">
-        <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-          className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-center mb-16">
-          How <span className="gradient-text">Recalla</span> Works
-        </motion.h2>
+        <div className="text-center max-w-2xl mx-auto mb-16">
+          <h2 className="text-3xl sm:text-5xl font-extrabold">From Voice to <span className="gradient-text">Knowledge</span> in Seconds</h2>
+          <p className="mt-4 text-lg text-[var(--text-secondary)]">Four steps. Zero friction.</p>
+        </div>
 
-        <div className="relative grid md:grid-cols-4 gap-8">
-          <motion.div className="hidden md:block absolute top-7 left-[12.5%] right-[12.5%] h-px origin-left"
-            initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }} viewport={{ once: true }} transition={{ duration: 1.2 }}
-            style={{ background: "linear-gradient(90deg, #4F6EF7, #7C3AED)" }} />
+        <div className="relative grid grid-cols-1 md:grid-cols-4 gap-10">
+          <svg className="hidden md:block absolute top-7 left-[12%] right-[12%] h-1 w-[76%]" viewBox="0 0 800 4" preserveAspectRatio="none">
+            <motion.line
+              x1="0" y1="2" x2="800" y2="2"
+              stroke="url(#stepgrad)" strokeWidth="2" strokeDasharray="800"
+              initial={{ strokeDashoffset: 800 }}
+              whileInView={{ strokeDashoffset: 0 }}
+              transition={{ duration: 1.6, ease: "easeOut" }}
+              viewport={{ once: true }}
+            />
+            <defs>
+              <linearGradient id="stepgrad" x1="0" x2="800" y1="0" y2="0">
+                <stop offset="0" stopColor="#4F6EF7" />
+                <stop offset="1" stopColor="#7C3AED" />
+              </linearGradient>
+            </defs>
+          </svg>
+
           {steps.map((s, i) => (
-            <motion.div key={s.n} initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.15 }}
-              className="relative text-center">
-              <div className="mx-auto h-14 w-14 rounded-full gradient-bg flex items-center justify-center text-white font-display font-bold shadow-[var(--shadow-glow)] relative z-10">
-                {s.n}
+            <motion.div
+              key={s.title}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.15, duration: 0.5 }}
+              className="relative text-center flex flex-col items-center"
+            >
+              <div className="relative h-14 w-14 rounded-full p-[2px] aurora-bg">
+                <div className="h-full w-full rounded-full bg-[var(--bg-surface)] flex items-center justify-center">
+                  <span className="text-2xl font-bold gradient-text font-display">{i + 1}</span>
+                </div>
               </div>
-              <h3 className="font-display text-lg font-semibold mt-5">{s.title}</h3>
-              <p className="mt-2 text-sm text-subtext max-w-xs mx-auto">{s.desc}</p>
+              <s.icon size={28} className="mt-4 text-[var(--accent-blue)]" />
+              <h3 className="mt-3 text-lg font-bold">{s.title}</h3>
+              <p className="mt-2 text-[15px] text-[var(--text-secondary)] leading-relaxed max-w-[240px]">{s.body}</p>
             </motion.div>
           ))}
         </div>
       </div>
-    </section>
+    </AnimatedSection>
   );
 }
+
+/* ───────────────────────── STATS ───────────────────────── */
+
+function Stats() {
+  const items = [
+    { value: 98, suffix: "%", label: "Transcription Accuracy", icon: TrendingUp },
+    { value: 2, prefix: "< ", suffix: "s", label: "Avg Response Time", icon: Zap },
+    { value: 0, label: "Data Sent to Servers", icon: Shield, customDisplay: "∞", swap: "0" },
+    { value: 0, label: "External Servers Used", icon: Lock },
+  ];
+  return (
+    <AnimatedSection className="py-20 px-5 sm:px-8">
+      <div className="max-w-7xl mx-auto rounded-3xl p-10 sm:p-14 aurora-bg relative overflow-hidden">
+        <div className="absolute inset-0 dot-grid opacity-20" />
+        <div className="relative grid grid-cols-2 lg:grid-cols-4 gap-8">
+          {items.map((s, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1 }}
+              className="relative"
+            >
+              <s.icon size={20} className="absolute right-0 top-0 text-white/60" />
+              <div className="text-5xl sm:text-6xl font-extrabold text-white font-display tracking-tight">
+                {s.customDisplay ?? <CountUp end={s.value} duration={2} prefix={s.prefix ?? ""} suffix={s.suffix ?? ""} enableScrollSpy scrollSpyOnce />}
+              </div>
+              <p className="mt-2 text-sm text-white/80 font-medium">{s.label}</p>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </AnimatedSection>
+  );
+}
+
+/* ───────────────────────── TESTIMONIALS ───────────────────────── */
+
+const testimonials = [
+  { quote: "Recalla saved me hours every week. I used to spend 30 minutes after every meeting writing notes. Now I just ask it what was decided and get the answer instantly.", name: "Sarah K.", role: "Product Manager" },
+  { quote: "As a student I record all my lectures. The way it extracts key concepts and lets me query them later is like having a photographic memory.", name: "Bilal A.", role: "Computer Science Student" },
+  { quote: "The proactive reminders are what got me. It reminded me about a deliverable I completely forgot was assigned three meetings ago. Genuinely impressive.", name: "Rania M.", role: "Operations Lead" },
+];
 
 function Testimonials() {
   return (
-    <section className="py-20 md:py-28">
-      <div className="max-w-7xl mx-auto px-5 sm:px-8">
-        <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-          className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-center mb-14">
-          Loved by students and professionals
-        </motion.h2>
-        <div className="grid md:grid-cols-3 gap-5 overflow-x-auto md:overflow-visible snap-x">
-          {testimonials.map((t, i) => (
-            <motion.div key={t.name} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
-              className="snap-start min-w-[280px] glass rounded-2xl p-6">
-              <div className="flex gap-0.5 text-amber-400 mb-4">
-                {Array.from({ length: 5 }).map((_, j) => <Star key={j} size={14} fill="currentColor" />)}
-              </div>
-              <p className="text-sm leading-relaxed">"{t.quote}"</p>
-              <div className="mt-5 flex items-center gap-3">
-                <div className="h-10 w-10 rounded-full gradient-bg flex items-center justify-center text-white text-sm font-semibold">{t.initials}</div>
-                <div>
-                  <p className="text-sm font-semibold">{t.name}</p>
-                  <p className="text-xs text-subtext">{t.role}</p>
+    <AnimatedSection className="py-24 px-5 sm:px-8 max-w-7xl mx-auto">
+      <div className="text-center max-w-2xl mx-auto mb-14">
+        <h2 className="text-3xl sm:text-5xl font-extrabold">Trusted by <span className="gradient-text">Professionals & Students</span></h2>
+      </div>
+      <div className="grid md:grid-cols-3 gap-6">
+        {testimonials.map((t, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: i * 0.1 }}
+          >
+            <GlassCard className="p-6 relative h-full">
+              <Quote size={48} className="absolute top-4 left-4 opacity-10" style={{ color: "var(--accent-blue)" }} />
+              <div className="relative">
+                <div className="flex gap-0.5 mb-3">
+                  {Array.from({ length: 5 }).map((_, j) => (
+                    <Star key={j} size={16} className="fill-amber-400 text-amber-400" />
+                  ))}
+                </div>
+                <p className="italic text-[15px] text-[var(--text-secondary)] leading-relaxed">"{t.quote}"</p>
+                <div className="mt-5 flex items-center gap-3 pt-4 border-t border-[var(--border)]">
+                  <Avatar name={t.name} />
+                  <div>
+                    <p className="font-semibold text-sm">{t.name}</p>
+                    <p className="text-xs text-[var(--text-muted)]">{t.role}</p>
+                  </div>
                 </div>
               </div>
-            </motion.div>
-          ))}
-        </div>
+            </GlassCard>
+          </motion.div>
+        ))}
       </div>
-    </section>
+    </AnimatedSection>
   );
 }
 
-function CtaBanner() {
+/* ───────────────────────── CTA ───────────────────────── */
+
+function FinalCTA() {
   return (
-    <section className="py-16 px-5 sm:px-8">
-      <div className="max-w-7xl mx-auto rounded-3xl gradient-bg px-8 py-16 md:py-20 text-center text-white shadow-[var(--shadow-glow)]">
-        <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight">
-          Start remembering everything. Free.
-        </h2>
-        <Link to="/signup" className="inline-flex mt-8 px-7 py-3.5 rounded-xl bg-white text-primary font-semibold hover:scale-[1.02] active:scale-[0.98] transition-transform">
-          Create Free Account
-        </Link>
+    <AnimatedSection className="py-24 px-5 sm:px-8">
+      <div className="relative max-w-6xl mx-auto rounded-3xl aurora-bg overflow-hidden p-12 sm:p-20 text-center">
+        <div className="absolute inset-0 dot-grid opacity-20" />
+        <div className="relative">
+          <h2 className="text-3xl sm:text-5xl font-extrabold text-white">Start Building Your AI Memory</h2>
+          <p className="mt-4 text-lg text-white/90 max-w-xl mx-auto">Free forever. No credit card. Setup in 60 seconds.</p>
+          <div className="mt-8 inline-block">
+            <Link to="/signup">
+              <GradientButton variant="white" size="lg">
+                <span className="gradient-text">Create Free Account</span>
+                <ArrowRight size={18} className="text-[var(--accent-purple)]" />
+              </GradientButton>
+            </Link>
+          </div>
+        </div>
       </div>
-    </section>
+    </AnimatedSection>
   );
 }
