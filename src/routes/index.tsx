@@ -12,8 +12,8 @@ import { Footer } from "@/components/layout/Footer";
 import { GradientButton } from "@/components/ui/GradientButton";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { AnimatedSection } from "@/components/ui/AnimatedSection";
-import { Badge } from "@/components/ui/Badge";
-import { Avatar } from "@/components/ui/Avatar";
+import { Badge } from "@/components/ui/RBadge";
+import { Avatar } from "@/components/ui/RAvatar";
 
 export const Route = createFileRoute("/")({
   head: () => ({

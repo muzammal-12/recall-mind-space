@@ -8,10 +8,10 @@ import {
   BrainCircuit, Send, X, Pause, StopCircle, Volume2, ArrowRight,
 } from "lucide-react";
 import { Sidebar } from "@/components/layout/Sidebar";
-import { Avatar } from "@/components/ui/Avatar";
+import { Avatar } from "@/components/ui/RAvatar";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { GradientButton } from "@/components/ui/GradientButton";
-import { Badge } from "@/components/ui/Badge";
+import { Badge } from "@/components/ui/RBadge";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({ meta: [{ title: "Dashboard — Recalla" }, { name: "description", content: "Your meetings, tasks, reminders and memory." }] }),

@@ -3,9 +3,9 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { Mail, Lock, Eye, EyeOff, LogIn, Loader2, Mic, CheckSquare, Bell } from "lucide-react";
 import { RecallaLogo } from "@/components/icons/RecallaLogo";
-import { RInput } from "@/components/ui/Input";
+import { RInput } from "@/components/ui/RInput";
 import { GradientButton } from "@/components/ui/GradientButton";
-import { Badge } from "@/components/ui/Badge";
+import { Badge } from "@/components/ui/RBadge";
 
 export const Route = createFileRoute("/login")({
   head: () => ({ meta: [{ title: "Sign in — Recalla" }, { name: "description", content: "Sign in to your Recalla workspace." }] }),

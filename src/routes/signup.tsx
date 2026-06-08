@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { useMemo, useState } from "react";
 import { User, Mail, Lock, UserPlus, Loader2, Brain, TrendingUp, BadgeCheck } from "lucide-react";
 import { RecallaLogo } from "@/components/icons/RecallaLogo";
-import { RInput } from "@/components/ui/Input";
+import { RInput } from "@/components/ui/RInput";
 import { GradientButton } from "@/components/ui/GradientButton";
 import { GoogleButton } from "./login";
 

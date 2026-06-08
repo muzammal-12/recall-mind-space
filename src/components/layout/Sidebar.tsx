@@ -5,7 +5,7 @@ import {
   CalendarDays, Settings, ChevronLeft, ChevronRight, LogOut, Sun, Moon,
 } from "lucide-react";
 import { RecallaLogo } from "@/components/icons/RecallaLogo";
-import { Avatar } from "@/components/ui/Avatar";
+import { Avatar } from "@/components/ui/RAvatar";
 import { useTheme } from "@/contexts/ThemeContext";
 
 const nav = [
